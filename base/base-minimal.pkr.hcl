@@ -26,7 +26,7 @@ source "amazon-ebssurrogate" "minimal-amd64" {
       volume_type = "standard"
       device_name = "/dev/xvdf"
       delete_on_termination = true
-      volume_size = 1
+      volume_size = 2
   }
 
   ami_root_device {

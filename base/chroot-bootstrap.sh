@@ -12,6 +12,7 @@ IFS=$'\n\t'
 
 ROOTFS=/rootfs
 DEVICE="/dev/xvdf"
+RELEASEVER="2022.0.20220531"
 
 arch="$( uname --machine )"
 
@@ -65,7 +66,7 @@ mount --types selinuxfs selinuxfs "$ROOTFS/sys/fs/selinux"
 
 echo "Grab the latest release and repos packages."
 
-dnf --installroot="$ROOTFS" --releasever=2022.0.20220531 -y update
+dnf --installroot="$ROOTFS" --releasever=$RELEASEVER -y update
 
 echo "Create fstab entry"
 cat > "${ROOTFS}/etc/fstab" <<EOF
@@ -89,8 +90,8 @@ cp -av /etc/default/grub "${ROOTFS}/etc/default/grub"
 set +u
 
 echo "Bootstrap system"
-dnf --installroot="$ROOTFS" --releasever=2022.0.20220531 -y group install ami-minimal
-dnf --installroot="$ROOTFS" --releasever=2022.0.20220531 -y install cloud-init systemd-container systemd-resolved systemd-networkd openssh-server grub2
+dnf --installroot="$ROOTFS" --releasever=$RELEASEVER -y group install ami-minimal
+dnf --installroot="$ROOTFS" --releasever=$RELEASEVER -y install cloud-init systemd-container systemd-resolved systemd-networkd openssh-server grub2
 
 set -u
 
@@ -143,11 +144,11 @@ if ! getenforce | grep --quiet --extended-regexp '^Disabled$' ; then
   chroot "$ROOTFS" /sbin/fixfiles -f -F relabel
 
   echo "Packages from https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/using_selinux/index that contain RPM scripts. Reinstall for the postinstall scriptlets."
-  dnf --installroot="$ROOTFS" --releasever=2022.0.20220531 -y reinstall selinux-policy-targeted policycoreutils
+  dnf --installroot="$ROOTFS" --releasever=$RELEASEVER -y reinstall selinux-policy-targeted policycoreutils
 fi
 
 echo "Repo cleanup"
-dnf --installroot="$ROOTFS" --releasever=2022.0.20220531 --cacheonly --assumeyes clean all
+dnf --installroot="$ROOTFS" --releasever=$RELEASEVER --cacheonly --assumeyes clean all
 rm --recursive --verbose "$ROOTFS"/var/cache/dnf/*
 
 echo "Clean up systemd machine ID file"
