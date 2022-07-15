@@ -8,10 +8,13 @@ packer {
 }
 
 source "amazon-ebssurrogate" "minimal-amd64" {
-  ami_name      = "base-minimal"
-  instance_type = "t2.micro"
-  region        = "us-east-1"
+  ami_name                = "base-minimal"
+  instance_type           = "t2.micro"
+  region                  = "us-east-1"
   ami_virtualization_type = "hvm"
+  ena_support             = true
+  force_deregister        = true
+  force_delete_snapshot   = true
   source_ami_filter {
     filters = {
       name                = "al2022-ami-minimal-*x86_64"
@@ -23,18 +26,18 @@ source "amazon-ebssurrogate" "minimal-amd64" {
   }
 
   launch_block_device_mappings {
-      volume_type = "standard"
-      device_name = "/dev/xvdf"
-      delete_on_termination = true
-      volume_size = 2
+    volume_type           = "standard"
+    device_name           = "/dev/xvdf"
+    delete_on_termination = true
+    volume_size           = 1
   }
 
   ami_root_device {
-    source_device_name = "/dev/xvdf"
-    device_name = "/dev/xvda"
+    source_device_name    = "/dev/xvdf"
+    device_name           = "/dev/xvda"
     delete_on_termination = true
-    volume_size = 6
-    volume_type = "gp2"
+    volume_size           = 6
+    volume_type           = "gp2"
   }
 
   ssh_username = "ec2-user"
@@ -42,16 +45,16 @@ source "amazon-ebssurrogate" "minimal-amd64" {
 
 
 build {
-  name    = "base-minimal"
+  name = "base-minimal"
   sources = [
     "source.amazon-ebssurrogate.minimal-amd64"
   ]
 
   provisioner "shell" {
-    script = "base/chroot-bootstrap.sh"
+    script          = "base/chroot-bootstrap.sh"
     execute_command = "sudo -S sh -c '{{ .Vars }} {{ .Path }}'"
 
     start_retry_timeout = "5m"
-    skip_clean = true
+    skip_clean          = true
   }
 }

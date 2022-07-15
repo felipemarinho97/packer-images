@@ -90,8 +90,28 @@ cp -av /etc/default/grub "${ROOTFS}/etc/default/grub"
 set +u
 
 echo "Bootstrap system"
-dnf --installroot="$ROOTFS" --releasever=$RELEASEVER -y group install ami-minimal
-dnf --installroot="$ROOTFS" --releasever=$RELEASEVER -y install cloud-init systemd-container systemd-resolved systemd-networkd openssh-server grub2
+dnf --installroot="$ROOTFS" --releasever=$RELEASEVER -y install \
+  amazon-ec2-net-utils \
+  bash \
+  cloud-init \
+  cloud-utils-growpart \
+  chrony \
+  dnf \
+  ec2-utils \
+  glibc-minimal-langpack \
+  glibc \
+  glibc-locale-source \
+  grub2 \
+  grubby \
+  kernel \
+  openssh-server \
+  policycoreutils \
+  selinux-policy-targeted \
+  systemd-container \
+  systemd-resolved \
+  systemd-networkd \
+  sudo
+
 
 set -u
 
